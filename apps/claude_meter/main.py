@@ -1,4 +1,4 @@
-"""Clawdmeter orchestrator.
+"""Claude Meter orchestrator.
 
 Owns the Whisplay LCD, the button, the RGB LED, and supervises the
 api_poller subprocess. Single process so the display refresh and the
@@ -6,9 +6,9 @@ animation tick share one event loop (avoids contention on the SPI bus
 the WhisPlay driver uses).
 
 Run on the Pi:
-    python3 ~/clawdmeter/main.py            # foreground, Ctrl+C to stop
-    python3 ~/clawdmeter/main.py --once     # one frame, then exit (smoke test)
-    python3 ~/clawdmeter/main.py --screen=splash --once
+    python3 ~/clawdmeter/apps/claude_meter/main.py            # foreground, Ctrl+C to stop
+    python3 ~/clawdmeter/apps/claude_meter/main.py --once     # one frame, then exit (smoke test)
+    python3 ~/clawdmeter/apps/claude_meter/main.py --screen=splash --once
 """
 
 from __future__ import annotations
@@ -49,7 +49,7 @@ POLLER_MAX_RESTARTS = 5
 POLLER_WINDOW_S = 60.0
 POLLER_BACKOFF_S = 3.0
 
-log = logging.getLogger("clawdmeter.main")
+log = logging.getLogger("claude_meter.main")
 
 
 class Screen(str, Enum):

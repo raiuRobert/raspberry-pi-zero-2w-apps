@@ -1,11 +1,11 @@
 """Display test for the Whisplay HAT.
 
 Targets the WhisPlay.WhisPlayBoard driver shipped with the HAT. Renders a mock
-Clawdmeter dashboard at the board's native resolution (LCD_WIDTH x LCD_HEIGHT)
+Claude Meter dashboard at the board's native resolution (LCD_WIDTH x LCD_HEIGHT)
 and sweeps the session percentage so we can confirm the refresh path works.
 
 Run on the Pi:
-    python3 ~/clawdmeter/display_test.py
+    python3 ~/clawdmeter/tools/display_test.py
 """
 
 from __future__ import annotations
@@ -64,7 +64,7 @@ def build_frame(width: int, height: int, s_pct: int, w_pct: int,
                 s_reset_min: int, w_reset_min: int) -> Image.Image:
     img = Image.new("RGB", (width, height), (12, 14, 22))
     d = ImageDraw.Draw(img)
-    d.text((10, 8), "Clawdmeter", font=_font(22), fill=(245, 180, 70))
+    d.text((10, 8), "Claude Meter", font=_font(22), fill=(245, 180, 70))
     d.text((10, 36), "display test", font=_font(14), fill=(140, 140, 150))
 
     s_color = _bar_color(s_pct, (90, 200, 120), (230, 180, 60), (230, 80, 80))

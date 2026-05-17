@@ -24,7 +24,7 @@ INDEX_FILE = ASSETS_DIR / "index.json"
 GROUP_ROTATE_S = 20.0  # how long to stay on one animation within the same group
 NATIVE_SIZE = 20  # 20x20 source frames
 
-log = logging.getLogger("clawdmeter.animations")
+log = logging.getLogger("claude_meter.animations")
 
 
 class Animator:

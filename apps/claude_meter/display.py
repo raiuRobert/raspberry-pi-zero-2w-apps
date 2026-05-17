@@ -29,7 +29,7 @@ from display_util import fmt_eta, font
 STATE_PATH = Path(os.environ.get("CLAWDMETER_STATE", "/tmp/clawdmeter_state.json"))
 STALE_AFTER_S = 90
 
-log = logging.getLogger("clawdmeter.display")
+log = logging.getLogger("claude_meter.display")
 
 
 # ---------- state ----------

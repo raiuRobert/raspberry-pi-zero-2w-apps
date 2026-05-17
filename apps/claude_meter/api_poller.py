@@ -39,7 +39,7 @@ OAUTH_CLIENT_ID = "9d1c250a-e61b-44d9-88ed-5944d1962f5e"
 MODEL = "claude-haiku-4-5"
 REQUEST_TIMEOUT_S = 15
 
-log = logging.getLogger("clawdmeter.poller")
+log = logging.getLogger("claude_meter.poller")
 
 
 def load_access_token() -> str:

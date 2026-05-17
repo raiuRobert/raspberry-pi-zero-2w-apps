@@ -5,7 +5,7 @@ launch with long press (hold 0.7s). Apps run as subprocesses; when they
 exit the menu reappears.
 
 Run on the Pi:
-    python3 ~/clawdmeter/launcher.py
+    python3 ~/claudemeter/launcher.py
 """
 
 from __future__ import annotations
@@ -31,7 +31,7 @@ from menu_display import ITEM_CLIP_W, render_menu, text_width
 # ---------- app registry ----------
 APPS = [
     {"name": "Claude Meter", "script": str(ROOT / "apps" / "claude_meter" / "main.py")},
-    # Add more apps here: {"name": "...", "script": str(ROOT / "other.py")}
+    {"name": "GPIO Monitor", "script": str(ROOT / "apps" / "gpio_monitor" / "main.py")},
 ]
 
 # ---------- tunables ----------

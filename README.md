@@ -80,7 +80,7 @@ requirements.txt         Python dependencies
 apps/
   claude_meter/
     main.py              App entry point — display loop and poller supervisor
-    api_poller.py        Polls Anthropic API, writes /tmp/clawdmeter_state.json
+    api_poller.py        Polls Anthropic API, writes /tmp/claudemeter_state.json
     display.py           Renders splash and usage screens (PIL)
     display_util.py      Shared PIL utilities (fonts, RGB565 conversion)
     animations.py        Sprite animation engine — loads and ticks frame sequences
@@ -95,7 +95,7 @@ tools/
 
 `main.py` and `api_poller.py` run as separate processes:
 
-- `api_poller.py` is spawned as a child process by `main.py`. It polls the Anthropic API every 60s and writes the result to `/tmp/clawdmeter_state.json`
+- `api_poller.py` is spawned as a child process by `main.py`. It polls the Anthropic API every 60s and writes the result to `/tmp/claudemeter_state.json`
 - `main.py` reads that file every 0.5s and redraws the screen — the display loop and network calls never block each other
 - A supervisor in `main.py` watches the poller and restarts it on crash, giving up after 5 restarts in 60s to avoid a crash loop
 
@@ -116,13 +116,13 @@ The Whisplay HAT driver (`WhisPlay.py`) must be at `~/Whisplay/Driver/WhisPlay.p
 
 ```bash
 # From your dev machine
-scp -r launcher.py menu_display.py requirements.txt apps/ tools/ user@raspberrypi:~/clawdmeter/
+scp -r launcher.py menu_display.py requirements.txt apps/ tools/ user@raspberrypi:~/claudemeter/
 ```
 
 ### Run manually
 
 ```bash
-python3 ~/clawdmeter/launcher.py
+python3 ~/claudemeter/launcher.py
 ```
 
 ### Run on boot (systemd user service)
@@ -136,8 +136,8 @@ After=default.target
 
 [Service]
 Type=simple
-WorkingDirectory=/home/rraiu/clawdmeter
-ExecStart=/usr/bin/python3 /home/rraiu/clawdmeter/launcher.py
+WorkingDirectory=/home/rraiu/claudemeter
+ExecStart=/usr/bin/python3 /home/rraiu/claudemeter/launcher.py
 Restart=on-failure
 RestartSec=5
 

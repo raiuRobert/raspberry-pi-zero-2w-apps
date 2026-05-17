@@ -18,7 +18,9 @@ import threading  # used for threading.Lock and threading.Event
 import time
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(Path.home() / "Whisplay" / "Driver"))
+sys.path.insert(0, str(ROOT / "apps" / "clawdmeter"))
 from WhisPlay import WhisPlayBoard
 
 from animations import Animator
@@ -26,11 +28,9 @@ from display import State
 from display_util import pil_to_rgb565_bytes
 from menu_display import ITEM_CLIP_W, render_menu, text_width
 
-ROOT = Path(__file__).resolve().parent
-
 # ---------- app registry ----------
 APPS = [
-    {"name": "Claude Meter", "script": str(ROOT / "main.py")},
+    {"name": "Claude Meter", "script": str(ROOT / "apps" / "clawdmeter" / "main.py")},
     # Add more apps here: {"name": "...", "script": str(ROOT / "other.py")}
 ]
 

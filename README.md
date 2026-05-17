@@ -129,17 +129,9 @@ python3 ~/clawdmeter/launcher.py
 
 ```bash
 mkdir -p ~/.config/systemd/user
-cp clawdmeter.service ~/.config/systemd/user/
-systemctl --user daemon-reload
-systemctl --user enable clawdmeter.service
-loginctl enable-linger $USER
-```
-
-The service file:
-
-```ini
+cat > ~/.config/systemd/user/launcher.service << 'EOF'
 [Unit]
-Description=Clawdmeter Launcher
+Description=Pi Zero Apps Launcher
 After=default.target
 
 [Service]
@@ -151,6 +143,10 @@ RestartSec=5
 
 [Install]
 WantedBy=default.target
+EOF
+systemctl --user daemon-reload
+systemctl --user enable launcher.service
+loginctl enable-linger $USER
 ```
 
 ### Authentication

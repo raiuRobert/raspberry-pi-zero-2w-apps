@@ -37,7 +37,7 @@ Monitors your [Claude Code](https://github.com/anthropics/claude-code) token usa
 - RGB LED colour tracks usage level (green → amber → red)
 
 **Screens (toggle with button tap):**
-- **Splash** — fullscreen animated Clawd sprite
+- **Splash** — fullscreen animated Claude sprite
 - **Usage** — card layout with progress bars and reset countdowns
 
 **Sprites** are ported from [HermannBjorgvin/Clawdmeter](https://github.com/HermannBjorgvin/Clawdmeter) (original ESP32 + BLE version).
@@ -48,32 +48,56 @@ Monitors your [Claude Code](https://github.com/anthropics/claude-code) token usa
 
 `launcher.py` is the boot entry point. It shows a scrollable app menu and manages launching/returning.
 
+**Boot flow:**
+
+1. systemd starts `launcher.py`
+2. Launcher draws the app menu on screen and waits for button input
+3. Short tap cycles through apps; hold 2s launches the selected one
+4. Launcher calls `board.cleanup()` to release the SPI/GPIO hardware, then runs the app as a subprocess — blocking until it exits
+5. The app inits its own board, runs, and exits when done
+6. Launcher re-inits the board and shows the menu again
+
 **Button controls:**
 
 | Action | Result |
 |---|---|
 | Quick tap (< 2s) | Next item in menu |
-| Hold ≥ 2s | Launch selected app (fires at the 2s mark, no need to release) |
-| Hold ≥ 10s (inside any app) | Exit app and return to launcher menu |
+| Hold >= 2s | Launch selected app (fires at the 2s mark, no need to release) |
+| Hold >= 10s (inside any app) | Exit app and return to launcher menu |
 
 Long names in the menu scroll horizontally when selected.
+
+Each app gets exclusive ownership of the hardware for its lifetime. This keeps GPIO state clean between apps and means a crashing app can never affect the launcher.
 
 ---
 
 ## Project Structure
 
 ```
-launcher.py          Boot entry point — menu UI and app lifecycle
-main.py              Claude Meter app — display loop and poller supervisor
-api_poller.py        Polls Anthropic API, writes /tmp/clawdmeter_state.json
-display.py           Renders splash and usage screens (PIL)
-display_util.py      Shared PIL utilities (fonts, RGB565 conversion)
-animations.py        Sprite animation engine — loads and ticks frame sequences
-menu_display.py      Renders the launcher menu screen (PIL)
-assets/sprites/      13 animations extracted from upstream Clawdmeter firmware
-tools/               convert_sprites.py — extracts sprites from upstream .h file
-requirements.txt     Python dependencies
+launcher.py              Boot entry point — menu UI and app lifecycle
+menu_display.py          Renders the launcher menu screen (PIL)
+requirements.txt         Python dependencies
+apps/
+  claude_meter/
+    main.py              App entry point — display loop and poller supervisor
+    api_poller.py        Polls Anthropic API, writes /tmp/clawdmeter_state.json
+    display.py           Renders splash and usage screens (PIL)
+    display_util.py      Shared PIL utilities (fonts, RGB565 conversion)
+    animations.py        Sprite animation engine — loads and ticks frame sequences
+    assets/sprites/      13 animations extracted from upstream Clawdmeter firmware
+tools/
+  convert_sprites.py     Extracts sprites from upstream .h file
+  probe_driver.py        Tests the Whisplay HAT directly
+  display_test.py        Smoke-tests the display
 ```
+
+### How Claude Meter works internally
+
+`main.py` and `api_poller.py` run as separate processes:
+
+- `api_poller.py` is spawned as a child process by `main.py`. It polls the Anthropic API every 60s and writes the result to `/tmp/clawdmeter_state.json`
+- `main.py` reads that file every 0.5s and redraws the screen — the display loop and network calls never block each other
+- A supervisor in `main.py` watches the poller and restarts it on crash, giving up after 5 restarts in 60s to avoid a crash loop
 
 ---
 
@@ -92,7 +116,7 @@ The Whisplay HAT driver (`WhisPlay.py`) must be at `~/Whisplay/Driver/WhisPlay.p
 
 ```bash
 # From your dev machine
-scp *.py assets/ -r user@raspberrypi:~/clawdmeter/
+scp -r launcher.py menu_display.py requirements.txt apps/ tools/ user@raspberrypi:~/clawdmeter/
 ```
 
 ### Run manually
@@ -143,12 +167,12 @@ After that the poller refreshes tokens automatically — no further action neede
 
 ## Adding More Apps
 
-Edit the `APPS` list at the top of `launcher.py`:
+Create a folder under `apps/` for your new app, then add it to the `APPS` list at the top of `launcher.py`:
 
 ```python
 APPS = [
-    {"name": "Claude Meter", "script": str(ROOT / "main.py")},
-    {"name": "Your App",     "script": str(ROOT / "your_app.py")},
+    {"name": "Claude Meter", "script": str(ROOT / "apps" / "claude_meter" / "main.py")},
+    {"name": "Your App",     "script": str(ROOT / "apps" / "your_app" / "main.py")},
 ]
 ```
 
